@@ -5,9 +5,7 @@ namespace BBn\SecurityBundle\DependencyInjection;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\DefinitionDecorator;
-use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 
 class ApiKeyFactory implements SecurityFactoryInterface
@@ -44,7 +42,6 @@ class ApiKeyFactory implements SecurityFactoryInterface
     {
         $node
             ->children()
-            ->scalarNode('provider')->end()
             ->scalarNode('parameter')->defaultValue('apikey')->end()
             ->end();
     }
