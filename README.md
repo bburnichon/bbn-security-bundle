@@ -5,7 +5,23 @@ API Key based Authentication bundle for Symfony2
 
 ### Usage
 
-...
+This bundle will enable the new api_key authentication provider
+
+use it as below in your security.yml file
+```yaml
+security:
+    firewall:
+        your-firewall-name:
+            pattern: ^/what-you-wish-to-protect/
+            provider: user_provider_name
+            api_key:
+                parameter: apikey
+            stateless: true
+```
+
+The new user provider should provide api keys as username
+
+The ```loadUserFromUsername()``` method will be called with the supplied api key the Authentication class does not care about the credentials fields
 
 ### Installation
 
@@ -20,9 +36,6 @@ $bundles = array(
     new BBn\SecurityBundle\BBnSecurityBundle(),
 );
 ```
-
-This will enable the new api_key authentication provider
-
 ### Running the Tests
 
 ```bash
