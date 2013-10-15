@@ -18,7 +18,7 @@ class ApiKeyFactory implements SecurityFactoryInterface
         $container
             ->setDefinition($providerId, new DefinitionDecorator('security.authentication.provider.api_key'))
             ->replaceArgument(0, new Reference($userProvider))
-            ->replaceArgument(1, $providerId)
+            ->replaceArgument(2, $providerId)
         ;
 
         $listenerId = 'security.authentication.listener.api_key.'.$id;

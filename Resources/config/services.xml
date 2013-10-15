@@ -19,6 +19,7 @@
     <service id="security.authentication.provider.api_key"
              class="%security.authentication.provider.api_key.class%">
       <argument /> <!-- User Provider (with credentials being the apiKeys -->
+      <argument type="service" id="security.user_checker"/>
       <argument /> <!-- Authentication service id -->
     </service>
 </services>
