@@ -46,7 +46,7 @@ class ApiKeyAuthenticator implements AuthenticationProviderInterface
 
         $this->userChecker->checkPostAuth($user);
 
-        return new PreAuthenticatedToken($user, $apiKey, $this->providerKey);
+        return new PreAuthenticatedToken($user, $apiKey, $this->providerKey, $user->getRoles());
     }
 
     public function supports(TokenInterface $token)
