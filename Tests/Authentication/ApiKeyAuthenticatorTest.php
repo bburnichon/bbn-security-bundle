@@ -10,34 +10,35 @@ use Symfony\Component\Security\Core\User\User;
 
 class ApiKeyAuthenticatorTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var \PHPUnit_Framework_MockObject_MockObject */
+    protected $mockedUserProvider;
+    /** @var \PHPUnit_Framework_MockObject_MockObject */
+    protected $mockedUserChecker;
+
     protected function setUp()
     {
+        $this->mockedUserProvider = $this->getMock('Symfony\\Component\\Security\\Core\\User\\UserProviderInterface');
+        $this->mockedUserChecker = $this->getMock('Symfony\\Component\\Security\\Core\\User\\UserCheckerInterface');
     }
 
     public function testItImplementsAuthenticationProviderInterface()
     {
-        $mockedUserProvider = $this->getMockForAbstractClass('Symfony\\Component\\Security\\Core\\User\\UserProviderInterface');
-
-        $authenticator = new ApiKeyAuthenticator($mockedUserProvider, 'testProviderKey');
+        $authenticator = $this->createAuthenticator();
 
         $this->assertInstanceOf('Symfony\\Component\\Security\\Core\\Authentication\\Provider\\AuthenticationProviderInterface', $authenticator);
     }
 
     public function testItSavesUserProviderAndProviderKey()
     {
-        $mockedUserProvider = $this->getMockForAbstractClass('Symfony\\Component\\Security\\Core\\User\\UserProviderInterface');
+        $authenticator = $this->createAuthenticator();
 
-        $authenticator = new ApiKeyAuthenticator($mockedUserProvider, 'testProviderKey');
-
-        $this->assertAttributeSame($mockedUserProvider, 'userProvider', $authenticator);
+        $this->assertAttributeSame($this->mockedUserProvider, 'userProvider', $authenticator);
         $this->assertAttributeSame('testProviderKey', 'providerKey', $authenticator);
     }
 
     public function testItSupportPreAuthenticatedToken()
     {
-        $mockedUserProvider = $this->getMockForAbstractClass('Symfony\\Component\\Security\\Core\\User\\UserProviderInterface');
-
-        $authenticator = new ApiKeyAuthenticator($mockedUserProvider, 'testProviderKey');
+        $authenticator = $this->createAuthenticator();
 
         $token = new PreAuthenticatedToken('testUser', 'testCredentials', 'invalidProviderKey');
         $this->assertFalse($authenticator->supports($token));
@@ -49,15 +50,18 @@ class ApiKeyAuthenticatorTest extends \PHPUnit_Framework_TestCase
     public function testAuthenticateTokenSearchUserFromCredentials()
     {
         $usernameNotFoundException = new UsernameNotFoundException();
-        $mockedUserProvider = $this->getMockForAbstractClass('Symfony\\Component\\Security\\Core\\User\\UserProviderInterface');
-        $mockedUserProvider
+        $this->mockedUserProvider
             ->expects($this->once())
             ->method('loadUserByUsername')
             ->with('testCredentials')
             ->will($this->throwException($usernameNotFoundException))
         ;
+        $this->mockedUserChecker
+            ->expects($this->never())
+            ->method('checkPostAuth')
+        ;
 
-        $authenticator = new ApiKeyAuthenticator($mockedUserProvider, 'testProviderKey');
+        $authenticator = $this->createAuthenticator();
         $token = new PreAuthenticatedToken('dontCare', 'testCredentials', 'testProviderKey');
 
         try {
@@ -75,20 +79,29 @@ class ApiKeyAuthenticatorTest extends \PHPUnit_Framework_TestCase
     public function testAuthenticateTokenReturnPreAuthenticatedToken()
     {
         $user = new User('testUserName', 'testCredentials');
-        $mockedUserProvider = $this->getMockForAbstractClass('Symfony\\Component\\Security\\Core\\User\\UserProviderInterface');
-        $mockedUserProvider
+        $this->mockedUserProvider
             ->expects($this->once())
             ->method('loadUserByUsername')
             ->with('testCredentials')
             ->will($this->returnValue($user))
         ;
+        $this->mockedUserChecker
+            ->expects($this->once())
+            ->method('checkPostAuth')
+            ->with($user)
+        ;
 
-        $authenticator = new ApiKeyAuthenticator($mockedUserProvider, 'testProviderKey');
+        $authenticator = $this->createAuthenticator();
         $token = new PreAuthenticatedToken('dontCare', 'testCredentials', 'testProviderKey');
 
         $authToken = $authenticator->authenticateToken($token);
         $this->assertInstanceOf(get_class($token), $authToken);
         $this->assertNotSame($token, $authToken);
         $this->assertSame($user, $authToken->getUser());
+    }
+
+    protected function createAuthenticator()
+    {
+        return new ApiKeyAuthenticator($this->mockedUserProvider, $this->mockedUserChecker, 'testProviderKey');
     }
 }
