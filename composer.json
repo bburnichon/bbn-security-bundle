@@ -1,0 +1,39 @@
+{
+    "name": "bburnichon/bbn-security-bundle",
+    "description": "Simple Api Key based Authentication bundle for Symfony2",
+    "keywords": [ "apikey", "bundle", "security" ],
+    "type": "symfony-bundle",
+    "require": {
+        "php": ">=5.3.3",
+
+        "symfony/dependency-injection": "~2.3",
+        "symfony/http-kernel": "~2.3",
+        "symfony/security": "~2.3",
+        "symfony/security-bundle": "~2.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Benoît Burnichon",
+            "email": "bburnichon@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-0": {
+            "BBn\\SecurityBundle\\": ""
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "target-dir": "BBn/SecurityBundle",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

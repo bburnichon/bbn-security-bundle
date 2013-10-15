@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+  <parameters>
+    <parameter key="security.authentication.listener.api_key.class">BBn\SecurityBundle\Firewall\ApiKeyListener</parameter>
+    <parameter key="security.authentication.provider.api_key.class">BBn\SecurityBundle\Authentication\ApiKeyAuthenticator</parameter>
+  </parameters>
+
+  <services>
+    <service id="security.authentication.listener.api_key"
+             class="%security.authentication.listener.api_key.class%">
+      <argument type="service" id="security.context"/>
+      <argument /> <!-- Api Key Name -->
+      <argument /> <!-- Authentication Provider -->
+    </service>
+    <service id="security.authentication.provider.api_key"
+             class="%security.authentication.provider.api_key.class%">
+      <argument /> <!-- User Provider (with credentials being the apiKeys -->
+      <argument /> <!-- Authentication service id -->
+    </service>
+</services>
+</container>
